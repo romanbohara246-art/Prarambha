@@ -3,8 +3,8 @@ import {FileText,ChevronRight,ShieldCheck} from 'lucide-react';
 import {supabase} from './supabase.js';
 import {PRODUCTS,SECURITY,UNSECURED_LIMIT,validateRequest,getQueue,setQueue,fmtRs} from './lib.js';
 
-export default function NewRequest({me,uid,online,say,go,reload,setQueued}){
- const [f,setF]=useState({member_name:'',member_id:'',member_phone:'',member_citizenship_no:'',product:'Personal',product_detail:'',security_type:'Without Collateral',collateral_details:'',savings_account_no:'',amount:'',tenure_months:'12',purpose:''});
+export default function NewRequest({me,uid,online,say,go,reload,setQueued,init}){
+ const [f,setF]=useState({member_name:'',member_id:'',member_phone:'',member_citizenship_no:'',member_address:'',product:init?.product||'Personal',product_detail:'',security_type:init?.security||'Without Collateral',collateral_details:'',savings_account_no:'',amount:'',tenure_months:'12',purpose:''});
  const [errors,setErrors]=useState({}),[busy,setBusy]=useState(false),[error,setError]=useState('');
  const set=k=>e=>setF({...f,[k]:e.target.value});
  const prod=PRODUCTS.find(p=>p.name===f.product);
@@ -15,7 +15,7 @@ export default function NewRequest({me,uid,online,say,go,reload,setQueued}){
   e.preventDefault();setError('');
   const v=validateRequest(f);setErrors(v);
   if(Object.keys(v).length){setError('Please fix the highlighted fields.');return}
-  const payload={staff_name:me.name,member_name:f.member_name.trim(),member_id:f.member_id.trim(),member_phone:f.member_phone.trim(),member_citizenship_no:f.member_citizenship_no.trim(),
+  const payload={staff_name:me.name,member_name:f.member_name.trim(),member_id:f.member_id.trim(),member_phone:f.member_phone.trim(),member_citizenship_no:f.member_citizenship_no.trim(),member_address:f.member_address.trim(),
    product:f.product,product_detail:f.product_detail.trim(),security_type:f.security_type,
    collateral_details:f.security_type==='With Collateral'?f.collateral_details.trim():null,
    savings_account_no:f.security_type==='With Saving'?f.savings_account_no.trim():null,
@@ -40,6 +40,7 @@ export default function NewRequest({me,uid,online,say,go,reload,setQueued}){
     <label>Member ID<input value={f.member_id} onChange={set('member_id')} placeholder="e.g. M-00142"/><Err k="member_id"/></label>
     <label>Member mobile number<input value={f.member_phone} onChange={set('member_phone')} inputMode="numeric" maxLength={10} placeholder="98XXXXXXXX"/><Err k="member_phone"/></label>
     <label>Member citizenship number (KYC)<input value={f.member_citizenship_no} onChange={set('member_citizenship_no')} placeholder="As on the citizenship card"/><Err k="member_citizenship_no"/></label>
+    <label className="wide">Member address<input value={f.member_address} onChange={set('member_address')} placeholder="Municipality, ward no., tole / street"/><Err k="member_address"/></label>
     <div className="sectionlabel">Loan details</div>
     <label>Loan product<select value={f.product} onChange={set('product')}>{PRODUCTS.map(p=><option key={p.name}>{p.name}</option>)}</select><small className="muted">{prod.desc}</small></label>
     <label>{prod.label}<input value={f.product_detail} onChange={set('product_detail')}/><Err k="product_detail"/></label>

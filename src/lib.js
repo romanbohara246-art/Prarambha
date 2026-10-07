@@ -31,6 +31,7 @@ export function validateRequest(f){
  if(!f.member_name.trim())e.member_name='Enter the member name';
  if(!f.member_id.trim())e.member_id='Enter the member ID';
  if(!/^9[678]\d{8}$/.test(f.member_phone.trim()))e.member_phone='Enter a valid 10-digit mobile number';
+ if(f.member_address.trim().length<3)e.member_address='Enter the member address';
  if(f.member_citizenship_no.trim().length<5)e.member_citizenship_no='Enter the member citizenship number (KYC)';
  const amt=Number(f.amount);
  if(!amt||amt<1000)e.amount='Minimum amount is Rs. 1,000';
@@ -50,8 +51,8 @@ export const getQueue=()=>{try{return JSON.parse(localStorage.getItem(QK)||'[]')
 export const setQueue=q=>localStorage.setItem(QK,JSON.stringify(q));
 
 // Phase 4: exports
-const HEAD=['Request','Member','Member ID','Product','Security','Amount','Period (months)','Submitted by','Status','Stage','Date'];
-const line=r=>[r.request_code,r.member_name,r.member_id,r.product,r.security_type,r.amount,r.tenure_months,r.staff_name,r.status,r.stage,fmtDate(r.created_at)];
+const HEAD=['Request','Member','Member ID','Product','Security','Amount','Period (months)','Submitted by','Status','Stage','Date','Member address'];
+const line=r=>[r.request_code,r.member_name,r.member_id,r.product,r.security_type,r.amount,r.tenure_months,r.staff_name,r.status,r.stage,fmtDate(r.created_at),r.member_address];
 export function exportCsv(rows){
  const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
  const text=[HEAD.map(esc).join(',')].concat(rows.map(r=>line(r).map(esc).join(','))).join('\n');

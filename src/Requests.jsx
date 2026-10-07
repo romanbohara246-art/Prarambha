@@ -3,10 +3,10 @@ import {Search,RefreshCw} from 'lucide-react';
 import {RequestTable} from './ui.jsx';
 import {PRODUCTS,STATUSES} from './lib.js';
 
-export default function Requests({requests,onOpen,refresh,refreshing}){
- const [q,setQ]=useState(''),[st,setSt]=useState('All statuses'),[pr,setPr]=useState('All products');
+export default function Requests({requests,onOpen,refresh,refreshing,preset}){
+ const [q,setQ]=useState(''),[st,setSt]=useState(preset?.status||'All statuses'),[pr,setPr]=useState(preset?.product||'All products');
  const rows=useMemo(()=>requests.filter(r=>
-  `${r.request_code} ${r.member_name} ${r.member_id} ${r.staff_name} ${r.product} ${r.status}`.toLowerCase().includes(q.toLowerCase())
+  `${r.request_code} ${r.member_name} ${r.member_id} ${r.member_address} ${r.staff_name} ${r.product} ${r.status}`.toLowerCase().includes(q.toLowerCase())
   &&(st==='All statuses'||r.status===st)&&(pr==='All products'||r.product===pr)),[requests,q,st,pr]);
  return <section className="card">
   <div className="toolbar">

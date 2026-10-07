@@ -1,8 +1,8 @@
 import React from 'react';
 import {fmtRs,fmtDate,statusClass} from './lib.js';
 
-export function Stat({icon,label,value,note}){
- return <div className="stat"><div className="staticon">{icon}</div><div><span>{label}</span><strong>{value}</strong><small>{note}</small></div></div>;
+export function Stat({icon,label,value,note,onClick}){
+ return <div className={'stat'+(onClick?' click':'')} onClick={onClick}><div className="staticon">{icon}</div><div><span>{label}</span><strong>{value}</strong><small>{note}</small></div></div>;
 }
 export function StatusBadge({s}){return <span className={statusClass(s)}>{s}</span>}
 export function Empty({title,text}){return <section className="card empty"><h2>{title}</h2><p>{text}</p></section>}
@@ -11,7 +11,7 @@ export function Modal({children,onClose}){
 }
 export function BarList({rows}){
  const max=Math.max(1,...rows.map(r=>r.value));
- return <div className="bars">{rows.map(r=><div className="barrow" key={r.label}>
+ return <div className="bars">{rows.map(r=><div className={'barrow'+(r.onClick?' click':'')} key={r.label} onClick={r.onClick}>
   <span className="barlabel">{r.label}</span>
   <div className="bartrack"><div className="barfill" style={{width:(r.value/max*100)+'%'}}/></div>
   <b className="barval">{r.display??r.value}</b></div>)}</div>;

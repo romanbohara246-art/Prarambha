@@ -114,3 +114,6 @@ label small{font-weight:400}
  .main{padding:16px 14px 100px}.pagehead h1{font-size:24px}
 }
 .sectionlabel{grid-column:1/-1;font-weight:700;color:var(--pri-d);font-size:14px;margin-top:6px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.stat.click,.flowitem.click,.barrow.click{cursor:pointer}
+.stat.click:hover{border-color:var(--pri);box-shadow:0 4px 14px rgba(11,114,133,.15)}
+.flowitem.click:hover b,.barrow.click:hover .barlabel{color:var(--pri)}

@@ -17,7 +17,7 @@ export default function RequestDetail({r,me,online,onClose,onChanged}){
   if(error)setErr(error.message);else{setRejecting(false);setReason('');await onChanged();await loadAudit()}
   setBusy(false);
  }
- const rows=[['Member',r.member_name],['Member ID',r.member_id],['Member phone',r.member_phone],['Member citizenship no. (KYC)',r.member_citizenship_no],['Submitted by (staff)',r.staff_name],
+ const rows=[['Member',r.member_name],['Member ID',r.member_id],['Member phone',r.member_phone],['Member address',r.member_address||'-'],['Member citizenship no. (KYC)',r.member_citizenship_no],['Submitted by (staff)',r.staff_name],
   ['Product',r.product],['Product detail',r.product_detail],['Security',r.security_type],
   ...(r.collateral_details?[['Collateral',r.collateral_details]]:[]),...(r.savings_account_no?[['Savings account',r.savings_account_no]]:[]),
   ['Loan amount',fmtRs(r.amount)],['Loan period',r.tenure_months+' months'],['Purpose',r.purpose],['Stage',r.stage],['Submitted',fmtDateTime(r.created_at)],

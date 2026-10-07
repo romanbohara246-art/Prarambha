@@ -66,10 +66,13 @@ function Shell({session,me}){
  const [requests,setRequests]=useState(()=>{try{return JSON.parse(localStorage.getItem(ck)||'[]')}catch{return[]}});
  const [notes,setNotes]=useState([]),[bellOpen,setBellOpen]=useState(false),[refreshing,setRefreshing]=useState(false);
  const [online,setOnline]=useState(navigator.onLine),[queued,setQueued]=useState(getQueue().filter(q=>q.uid===uid).length);
- const [toast,setToast]=useState(''),[openId,setOpenId]=useState(null),[side,setSide]=useState(true);
+ const [toast,setToast]=useState(''),[openId,setOpenId]=useState(null),[side,setSide]=useState(true),[preset,setPreset]=useState(null),[newInit,setNewInit]=useState(null);
 
  const say=m=>{setToast(m);setTimeout(()=>setToast(''),3500)};
  const go=p=>{if(p!==window.location.pathname)window.history.pushState({},'',p);setPath(p);window.scrollTo(0,0)};
+ const navTo=p=>{setPreset(null);setNewInit(null);go(p)};
+ const goFilter=f=>{setPreset(f);go('/requests')};
+ const goNew=i=>{setNewInit(i);go('/new')};
  useEffect(()=>{const f=()=>setPath(window.location.pathname==='/staff'?'/admin':window.location.pathname);window.addEventListener('popstate',f);return()=>window.removeEventListener('popstate',f)},[]);
 
  const loadRequests=useCallback(async()=>{
@@ -152,16 +155,16 @@ function Shell({session,me}){
   <div className="body">
    <aside className={side?'side':'side collapsed'}>
     <button className="menubtn" onClick={()=>setSide(!side)}><Menu size={20}/></button>
-    {NAV.filter(n=>n.roles.includes(me.role)).map(n=>{const I=n.icon;return <button key={n.path} className={'nav '+(cur.path===n.path?'active':'')} onClick={()=>go(n.path)}><I size={19}/><span>{n.label}</span></button>})}
+    {NAV.filter(n=>n.roles.includes(me.role)).map(n=>{const I=n.icon;return <button key={n.path} className={'nav '+(cur.path===n.path?'active':'')} onClick={()=>navTo(n.path)}><I size={19}/><span>{n.label}</span></button>})}
     <div className="sidebottom"><Lock size={17}/><span>Supabase RLS secured</span></div>
    </aside>
    <main className="main">
     <div className="pagehead"><div><div className="crumb">Staff Loan Portal › {cur.label}</div><h1>{cur.label}</h1><p>{cur.sub}</p></div>
-     {cur.path==='/requests'&&<button className="primary" onClick={()=>go('/new')}><PlusCircle size={17}/> New Request</button>}</div>
+     {cur.path==='/requests'&&<button className="primary" onClick={()=>navTo('/new')}><PlusCircle size={17}/> New Request</button>}</div>
     {forbidden?<Empty title="Access denied" text="You do not have permission to view this page."/>:<>
-     {cur.path==='/'&&<Dashboard {...common} go={go}/>}
-     {cur.path==='/requests'&&<Requests {...common} refresh={loadRequests} refreshing={refreshing}/>}
-     {cur.path==='/new'&&<NewRequest me={me} uid={uid} online={online} say={say} go={go} reload={loadRequests} setQueued={setQueued}/>}
+     {cur.path==='/'&&<Dashboard {...common} go={navTo} goFilter={goFilter} goNew={goNew}/>}
+     {cur.path==='/requests'&&<Requests key={JSON.stringify(preset)} preset={preset} {...common} refresh={loadRequests} refreshing={refreshing}/>}
+     {cur.path==='/new'&&<NewRequest init={newInit} me={me} uid={uid} online={online} say={say} go={go} reload={loadRequests} setQueued={setQueued}/>}
      {cur.path==='/workflow'&&<Workflow {...common}/>}
      {cur.path==='/reports'&&<Reports {...common}/>}
      {cur.path==='/audit'&&<Audit online={online}/>}
