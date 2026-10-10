@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from 'react';
 import {UserPlus,Trash2,ShieldCheck,ChevronRight} from 'lucide-react';
 import {supabase,signupClient} from './supabase.js';
-import {ROLES} from './lib.js';
+import {ROLES,ROLE_LABEL} from './lib.js';
 
 export default function Admin({me,online,say}){
  const [users,setUsers]=useState([]),[busy,setBusy]=useState(false),[error,setError]=useState('');
@@ -39,7 +39,7 @@ export default function Admin({me,online,say}){
      <label>Full Name<input name="name" required placeholder="e.g. Sita Karki"/></label>
      <label>Email<input name="email" type="email" required placeholder="staff@company.com"/></label>
      <label>Password<input name="password" type="password" minLength={6} required placeholder="Min 6 characters"/></label>
-     <label>Role<select name="role" defaultValue="staff">{ROLES.map(r=><option key={r}>{r}</option>)}</select></label>
+     <label>Role<select name="role" defaultValue="staff">{ROLES.map(r=><option key={r} value={r}>{ROLE_LABEL[r]}</option>)}</select></label>
     </div>
     <div className="formfooter"><span><ShieldCheck size={16}/> Admin only</span>
      <button className="primary" disabled={busy||!online}>{busy?'Creating…':'Create Staff'} <ChevronRight size={17}/></button></div>
@@ -50,7 +50,7 @@ export default function Admin({me,online,say}){
    <div className="tablewrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead>
     <tbody>{users.map(u=>{const self=u.id===me.id;return <tr key={u.id}>
      <td><b>{u.name}</b></td><td>{u.email}</td>
-     <td><select value={u.role} disabled={self} onChange={e=>patch(u,{role:e.target.value})}>{ROLES.map(r=><option key={r}>{r}</option>)}</select></td>
+     <td><select value={u.role} disabled={self} onChange={e=>patch(u,{role:e.target.value})}>{ROLES.map(r=><option key={r} value={r}>{ROLE_LABEL[r]}</option>)}</select></td>
      <td><button className="link" disabled={self} onClick={()=>patch(u,{active:!u.active})}>{u.active?'Active · Deactivate':'Inactive · Activate'}</button></td>
      <td><button className="iconbtn dark" disabled={self} onClick={()=>remove(u)} title="Remove"><Trash2 size={16}/></button></td></tr>})}</tbody></table></div>
   </section>

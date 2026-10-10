@@ -60,7 +60,7 @@ small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
 .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
 .flowitem{display:flex;gap:12px;align-items:flex-start}
 .flowicon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;color:#fff}
-.f0{background:#e0a100}.f1{background:#2b6cb0}.f2{background:#1b8a5a}.f3{background:#c0392b}
+.f0{background:#e0a100}.f1{background:#2b6cb0}.f2{background:#1b8a5a}.f3{background:#0f9d8a}.f4{background:#0d5b2a}.f5{background:#c0392b}
 .bars{display:flex;flex-direction:column;gap:10px}
 .barrow{display:grid;grid-template-columns:105px 1fr 40px;gap:10px;align-items:center;font-size:13px}
 .bartrack{background:var(--soft);border-radius:99px;height:10px;overflow:hidden}.barfill{background:var(--pri);height:100%;border-radius:99px;min-width:2px}
@@ -117,3 +117,9 @@ label small{font-weight:400}
 .stat.click,.flowitem.click,.barrow.click{cursor:pointer}
 .stat.click:hover{border-color:var(--pri);box-shadow:0 4px 14px rgba(11,114,133,.15)}
 .flowitem.click:hover b,.barrow.click:hover .barlabel{color:var(--pri)}
+
+.status.ready-for-disburse{background:#d9f5f0;color:#0b6b5f}.status.disbursed{background:#cfeedd;color:#0d5b2a}
+.chk{flex-direction:row;align-items:center;gap:10px;font-weight:600}.chk input{width:18px;height:18px;padding:0}
+.reviewbox{background:#f6fbfc;border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px;display:flex;flex-direction:column;gap:12px}
+.hint{color:var(--muted);font-size:12px;margin-top:8px}
+td small{margin-top:3px}

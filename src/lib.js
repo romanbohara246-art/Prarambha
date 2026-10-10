@@ -12,12 +12,16 @@ export const SECURITY=[
 ];
 export const FLOW=[
  ['Pending','Submitted • Awaiting Review'],
- ['Under Review','Document Verification • Risk Assessment'],
- ['Approved','Loan Sanctioned • Disbursal Ready'],
+ ['Under Review','Field Visit • Documents • Remarks'],
+ ['Approved','Approved • Ready for Paper Work'],
+ ['Ready for Disburse','Paper Work Complete • Ready for Disbursal'],
+ ['Disbursed','Loan Disbursed'],
  ['Rejected with Reason','Not Eligible • Reason Logged • Notification Sent']
 ];
+export const APPROVED_SET=['Approved','Ready for Disburse','Disbursed'];
 export const STATUSES=FLOW.map(f=>f[0]);
 export const ROLES=['staff','approver','admin'];
+export const ROLE_LABEL={staff:'Staff',approver:'Loan Officer',admin:'Admin'};
 export const UNSECURED_LIMIT=300000;
 
 export const fmtRs=n=>'Rs. '+Number(n||0).toLocaleString('en-IN');
@@ -42,6 +46,17 @@ export function validateRequest(f){
  if(f.security_type==='With Collateral'&&f.collateral_details.trim().length<5)e.collateral_details='Describe the collateral (property, gold, asset)';
  if(f.security_type==='With Saving'&&!f.savings_account_no.trim())e.savings_account_no='Enter the savings account number';
  if(f.purpose.trim().length<10)e.purpose='Describe the purpose (at least 10 characters)';
+ const share=Number(f.share_amount);
+ if(f.share_amount===''||isNaN(share)||share<0)e.share_amount='Enter the share amount (0 if none)';
+ const sav=Number(f.total_saving_amount);
+ if(f.total_saving_amount===''||isNaN(sav)||sav<0)e.total_saving_amount='Enter the total saving amount (0 if none)';
+ if(!f.account_open_date)e.account_open_date='Enter the account open date';
+ else if(f.account_open_date>new Date().toISOString().slice(0,10))e.account_open_date='Date cannot be in the future';
+ const hasG=[f.guarantor_name,f.guarantor_member_id,f.guarantor_phone,f.guarantor_relation].some(x=>x.trim());
+ if(hasG){
+  if(!f.guarantor_name.trim())e.guarantor_name='Enter the guarantor name';
+  if(!/^9[678]\d{8}$/.test(f.guarantor_phone.trim()))e.guarantor_phone='Enter a valid 10-digit mobile number';
+ }
  return e;
 }
 
@@ -51,8 +66,8 @@ export const getQueue=()=>{try{return JSON.parse(localStorage.getItem(QK)||'[]')
 export const setQueue=q=>localStorage.setItem(QK,JSON.stringify(q));
 
 // Phase 4: exports
-const HEAD=['Request','Member','Member ID','Product','Security','Amount','Period (months)','Submitted by','Status','Stage','Date','Member address'];
-const line=r=>[r.request_code,r.member_name,r.member_id,r.product,r.security_type,r.amount,r.tenure_months,r.staff_name,r.status,r.stage,fmtDate(r.created_at),r.member_address];
+const HEAD=['Request','Member','Member ID','Product','Security','Amount','Period (months)','Submitted by','Status','Stage','Date','Member address','Share amount','Total saving','Account open date','Guarantee','Guarantor','Guarantor phone'];
+const line=r=>[r.request_code,r.member_name,r.member_id,r.product,r.security_type,r.amount,r.tenure_months,r.staff_name,r.status,r.stage,fmtDate(r.created_at),r.member_address,r.share_amount,r.total_saving_amount,r.account_open_date,r.guarantee_details,r.guarantor_name,r.guarantor_phone];
 export function exportCsv(rows){
  const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
  const text=[HEAD.map(esc).join(',')].concat(rows.map(r=>line(r).map(esc).join(','))).join('\n');
@@ -65,6 +80,6 @@ export async function exportPdf(rows){
  const doc=new jsPDF({orientation:'landscape'});
  doc.setFontSize(14);doc.text('Prarambha - Loan Requests Report',14,14);
  doc.setFontSize(9);doc.text('Generated '+new Date().toLocaleString('en-GB')+'  |  '+rows.length+' requests',14,20);
- autoTable(doc,{startY:25,head:[HEAD],body:rows.map(r=>line(r).map((v,i)=>i===5?fmtRs(v):v)),styles:{fontSize:8},headStyles:{fillColor:[11,114,133]}});
+ autoTable(doc,{startY:25,head:[HEAD.slice(0,11)],body:rows.map(r=>line(r).slice(0,11).map((v,i)=>i===5?fmtRs(v):v)),styles:{fontSize:8},headStyles:{fillColor:[11,114,133]}});
  doc.save('loan-requests.pdf');
 }

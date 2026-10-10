@@ -1,15 +1,15 @@
 import React from 'react';
-import {Clock3,Search,CheckCircle2,XCircle,ChevronRight} from 'lucide-react';
+import {Clock3,Search,CheckCircle2,XCircle,ChevronRight,FileText,Banknote} from 'lucide-react';
 import {Stat,RequestTable,BarList} from './ui.jsx';
-import {PRODUCTS,SECURITY,FLOW,fmtRs} from './lib.js';
+import {PRODUCTS,SECURITY,FLOW,APPROVED_SET,fmtRs} from './lib.js';
 
 export default function Dashboard({me,requests,go,goFilter,goNew,onOpen}){
  const by=s=>requests.filter(r=>r.status===s);
- const approved=by('Approved'),rejected=by('Rejected with Reason');
+ const approved=requests.filter(r=>APPROVED_SET.includes(r.status)),rejected=by('Rejected with Reason');
  const decided=approved.length+rejected.length;
  const rate=decided?Math.round(approved.length/decided*100):0;
- const dr=[...approved,...rejected].filter(r=>r.reviewed_at);
- const avgH=dr.length?dr.reduce((t,r)=>t+(new Date(r.reviewed_at)-new Date(r.created_at)),0)/dr.length/36e5:0;
+ const dr=[...approved,...rejected].filter(r=>r.decided_at);
+ const avgH=dr.length?dr.reduce((t,r)=>t+(new Date(r.decided_at)-new Date(r.created_at)),0)/dr.length/36e5:0;
  const avg=!dr.length?'-':avgH<1?Math.round(avgH*60)+' min':avgH<48?avgH.toFixed(1)+' hrs':(avgH/24).toFixed(1)+' days';
  const months=[...Array(6)].map((_,i)=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-(5-i));return{key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleString('en-GB',{month:'short'})}});
  const monthRows=months.map(m=>({label:m.label,value:requests.filter(r=>r.created_at.slice(0,7)===m.key).length}));
@@ -19,7 +19,9 @@ export default function Dashboard({me,requests,go,goFilter,goNew,onOpen}){
   <div className="stats">
    <Stat icon={<Clock3/>} label="Pending" value={by('Pending').length} note="Awaiting review" onClick={()=>goFilter({status:'Pending'})}/>
    <Stat icon={<Search/>} label="Under Review" value={by('Under Review').length} note="Risk assessment" onClick={()=>goFilter({status:'Under Review'})}/>
-   <Stat icon={<CheckCircle2/>} label="Approved" value={approved.length} note="Ready for disbursal" onClick={()=>goFilter({status:'Approved'})}/>
+   <Stat icon={<CheckCircle2/>} label="Approved" value={by('Approved').length} note="Ready for paper work" onClick={()=>goFilter({status:'Approved'})}/>
+   <Stat icon={<FileText/>} label="Ready for Disburse" value={by('Ready for Disburse').length} note="Paper work complete" onClick={()=>goFilter({status:'Ready for Disburse'})}/>
+   <Stat icon={<Banknote/>} label="Disbursed" value={by('Disbursed').length} note="Loan paid out" onClick={()=>goFilter({status:'Disbursed'})}/>
    <Stat icon={<XCircle/>} label="Rejected" value={rejected.length} note="Reason logged" onClick={()=>goFilter({status:'Rejected with Reason'})}/>
   </div>
   <section className="grid3">
@@ -39,6 +41,6 @@ export default function Dashboard({me,requests,go,goFilter,goNew,onOpen}){
     {SECURITY.map(s=><div className="product click" key={s.name} onClick={()=>goNew({security:s.name})}><span>{s.icon}</span><div><b>{s.name}</b><small>{s.desc}</small></div></div>)}</div>
   </section>
   <section className="card"><div className="cardtitle"><div><b>4 Status Flow</b><small>From submission to decision</small></div></div>
-   <div className="flow">{FLOW.map((x,i)=><div className="flowitem click" key={x[0]} onClick={()=>goFilter({status:x[0]})}><div className={'flowicon f'+i}>{[<Clock3/>,<Search/>,<CheckCircle2/>,<XCircle/>][i]}</div><div><b>{x[0]}</b><small>{x[1]}</small></div></div>)}</div></section>
+   <div className="flow">{FLOW.map((x,i)=><div className="flowitem click" key={x[0]} onClick={()=>goFilter({status:x[0]})}><div className={'flowicon f'+i}>{[<Clock3/>,<Search/>,<CheckCircle2/>,<FileText/>,<Banknote/>,<XCircle/>][i]}</div><div><b>{x[0]}</b><small>{x[1]}</small></div></div>)}</div></section>
  </>;
 }

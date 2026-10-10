@@ -1,15 +1,15 @@
 import React,{useMemo,useState} from 'react';
 import {Download,FileText,BarChart3,CheckCircle2,XCircle} from 'lucide-react';
 import {Stat,RequestTable} from './ui.jsx';
-import {PRODUCTS,STATUSES,fmtRs,exportCsv,exportPdf} from './lib.js';
+import {PRODUCTS,STATUSES,APPROVED_SET,fmtRs,exportCsv,exportPdf} from './lib.js';
 
 export default function Reports({requests,onOpen}){
  const [from,setFrom]=useState(''),[to,setTo]=useState(''),[st,setSt]=useState('All statuses'),[pr,setPr]=useState('All products'),[busy,setBusy]=useState(false);
  const rows=useMemo(()=>requests.filter(r=>{const d=r.created_at.slice(0,10);
   return(!from||d>=from)&&(!to||d<=to)&&(st==='All statuses'||r.status===st)&&(pr==='All products'||r.product===pr)}),[requests,from,to,st,pr]);
  const sum=a=>a.reduce((t,r)=>t+Number(r.amount),0);
- const approved=rows.filter(r=>r.status==='Approved');
- const byProduct=PRODUCTS.map(p=>{const l=rows.filter(r=>r.product===p.name);return{name:p.name,count:l.length,total:sum(l),ok:sum(l.filter(r=>r.status==='Approved'))}});
+ const approved=rows.filter(r=>APPROVED_SET.includes(r.status));
+ const byProduct=PRODUCTS.map(p=>{const l=rows.filter(r=>r.product===p.name);return{name:p.name,count:l.length,total:sum(l),ok:sum(l.filter(r=>APPROVED_SET.includes(r.status)))}});
  async function pdf(){setBusy(true);try{await exportPdf(rows)}finally{setBusy(false)}}
  return <>
   <div className="stats">

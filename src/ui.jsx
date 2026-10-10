@@ -23,5 +23,5 @@ export function RequestTable({rows,onOpen}){
    <td><b>{r.request_code}</b><small>{fmtDate(r.created_at)}</small></td>
    <td><b>{r.member_name}</b><small>ID: {r.member_id}</small></td>
    <td>{r.product}</td><td>{fmtRs(r.amount)}</td><td>{r.tenure_months} mo</td><td>{r.staff_name}</td>
-   <td><StatusBadge s={r.status}/></td></tr>)}</tbody></table></div>;
+   <td><StatusBadge s={r.status}/><small>{r.stage}</small></td></tr>)}</tbody></table></div>;
 }
